@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.logger.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,26 +36,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             String authHeader = request.getHeader(AUTHORIZATION);
             if(authHeader != null && authHeader.startsWith("Bearer ")){
                 try {
-                    String token = authHeader.substring("Bearer ".length());
-                    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                    JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(token);
-                    String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("role").asArray(String.class);
-                    Collection<SimpleGrantedAuthority> authoritys = new ArrayList<>();
-                    stream(roles).forEach(role -> {
-                        authoritys.add(new SimpleGrantedAuthority(role));
-                    });
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            username, null, authoritys
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request, response);
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(JwtTokenUtil.getAuthenticationToken(authHeader));
+                    filterChain
+                            .doFilter(request, response);
                 } catch (Exception exception) {
-                    response.setStatus(FORBIDDEN.value());
-
                     Map<String, String> error = new HashMap<>();
                     error.put("error_message", exception.getMessage());
+                    response.setStatus(FORBIDDEN.value());
                     response.setContentType(APPLICATION_JSON_VALUE);
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
