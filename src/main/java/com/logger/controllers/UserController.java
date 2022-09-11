@@ -2,6 +2,7 @@ package com.logger.controllers;
 
 import com.logger.base.model.common.Concrete.ResponseSuccessDto;
 import com.logger.base.model.user.UserDto;
+import com.logger.base.model.user.UserViewDto;
 import com.logger.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping(path = "{id}")
-    public UserDto get(@PathVariable("id") long id){
+    public UserViewDto get(@PathVariable("id") long id){
         return this.userService.get(id);
     }
 

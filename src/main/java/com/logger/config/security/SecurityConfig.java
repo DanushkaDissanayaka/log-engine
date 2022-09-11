@@ -1,5 +1,6 @@
 package com.logger.config.security;
 
+import com.logger.base.config.JwtTokenService;
 import com.logger.base.enums.RoleEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,10 +23,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder bCryptPasswordEncoder;
+
+    private final JwtTokenService jwtTokenService;
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder bCryptPasswordEncoder){
+    public SecurityConfig(
+            UserDetailsService userDetailsService,
+            PasswordEncoder bCryptPasswordEncoder,
+            JwtTokenService jwtTokenService
+    ){
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.jwtTokenService = jwtTokenService;
     }
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -34,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), jwtTokenService);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
         http.csrf().disable();
         http.authorizeRequests();
@@ -42,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/login/**").permitAll();
         http.authorizeRequests().antMatchers(GET, "/api/v1/user/**").hasAnyAuthority(RoleEnum.ADMIN.name());
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomAuthorizationFilter(jwtTokenService), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
