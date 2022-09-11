@@ -2,6 +2,7 @@ package com.logger.business.service;
 
 import com.logger.base.model.common.Concrete.ResponseSuccessDto;
 import com.logger.base.model.user.UserDto;
+import com.logger.base.model.user.UserViewDto;
 import com.logger.base.service.UserService;
 import com.logger.repository.RoleRepository;
 import com.logger.repository.UserRepository;
@@ -102,9 +103,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDto get(long id) {
+    public UserViewDto get(long id) {
         User user = this.userRepository.getReferenceById(id);
-        return this.modelMapper.map(user, UserDto.class);
+        return this.modelMapper.map(user, UserViewDto.class);
     }
 
     @Override
