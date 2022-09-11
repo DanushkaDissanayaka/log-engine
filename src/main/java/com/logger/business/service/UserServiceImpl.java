@@ -1,5 +1,7 @@
 package com.logger.business.service;
 
+import com.logger.base.model.common.Abstract.PageResult;
+import com.logger.base.model.common.Concrete.PageResultImpl;
 import com.logger.base.model.common.Concrete.ResponseSuccessDto;
 import com.logger.base.model.user.UserDto;
 import com.logger.base.model.user.UserViewDto;
@@ -10,6 +12,8 @@ import com.logger.repository.model.Role;
 import com.logger.repository.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -109,7 +114,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserDto> get(int skip, int take, int role, String searchText) {
-        return List.of(new UserDto());
+    public PageResult<UserViewDto> get(int page, int size, String searchText) {
+        Pageable pr = PageRequest.of(page, size);
+        var users = userRepository.findAll(pr);
+        List<UserViewDto> usersList = users.stream().map(user -> modelMapper.map(user, UserViewDto.class)).collect(Collectors.toList());
+        return new PageResultImpl<>(usersList, users.getTotalPages());
     }
 }

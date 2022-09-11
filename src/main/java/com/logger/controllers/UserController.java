@@ -1,13 +1,13 @@
 package com.logger.controllers;
 
+import com.logger.base.model.common.Abstract.PageResult;
 import com.logger.base.model.common.Concrete.ResponseSuccessDto;
 import com.logger.base.model.user.UserDto;
 import com.logger.base.model.user.UserViewDto;
 import com.logger.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,8 +31,16 @@ public class UserController extends BaseController {
     }
 
     @GetMapping
-    public String hello(){
-        return "Hello";
+    public ResponseEntity<PageResult<UserViewDto>> getUsers(
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size,
+            @RequestParam(name = "searchText", required = false) String searchText
+    ){
+        var response = userService.get(page, size, searchText);
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.OK
+        );
     }
 
     @PutMapping

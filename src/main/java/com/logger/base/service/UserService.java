@@ -1,5 +1,6 @@
 package com.logger.base.service;
 
+import com.logger.base.model.common.Abstract.PageResult;
 import com.logger.base.model.common.Concrete.ResponseSuccessDto;
 import com.logger.base.model.user.UserDto;
 import com.logger.base.model.user.UserViewDto;
@@ -12,5 +13,5 @@ public interface UserService {
     ResponseSuccessDto update(UserDto model);
     ResponseSuccessDto delete(long id);
     UserViewDto get(long id);
-    List<UserDto> get(int skip, int take, int role, String searchText);
+    PageResult<UserViewDto> get(int page, int size, String searchText);
 }
