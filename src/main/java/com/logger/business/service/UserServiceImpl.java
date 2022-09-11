@@ -76,6 +76,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public ResponseSuccessDto update(UserDto model) {
+        User user = userRepository.getReferenceById(model.getId());
+        Role role = roleRepository.getReferenceById(model.getRoleId());
+
+        user.setEmail(model.getEmail());
+        user.setName(model.getName());
+        user.setRole(role);
+
+        userRepository.save(user);
+        return new ResponseSuccessDto(true, "User has updated");
+    }
+
+    @Override
+    public ResponseSuccessDto delete(long id) {
+        userRepository.deleteById(id);
+        return new ResponseSuccessDto(true, "User has Deleted");
+    }
+
+    @Override
     public UserDto get(long id) {
         User user = this.userRepository.getReferenceById(id);
         return this.modelMapper.map(user, UserDto.class);

@@ -11,6 +11,16 @@ public class UserDto {
         return roleId;
     }
 
+    public UserDto() {
+    }
+
+    public UserDto(Long roleId, String name, String email, String password) {
+        this.roleId = roleId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }

@@ -30,4 +30,13 @@ public class UserController extends BaseController {
     public String hello(){
         return "Hello";
     }
+
+    @PutMapping
+    public ResponseSuccessDto update(@RequestBody UserDto model) {
+        return this.userService.update(model);
+    }
+    @DeleteMapping(path = "{id}")
+    public ResponseSuccessDto delete(@PathVariable("id") long id) {
+        return this.userService.delete(id);
+    }
 }
