@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
 
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
+                user.getId().toString(),
                 user.getPassword(),
                 authorities
         );
@@ -77,21 +77,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public ResponseSuccessDto update(UserDto model) {
-        User user = userRepository.getReferenceById(model.getId());
-        Role role = roleRepository.getReferenceById(model.getRoleId());
+        var r = new ResponseSuccessDto(false, "User not fund");
+        if (userRepository.existsById(model.getId())) {
+            User user = userRepository.getReferenceById(model.getId());
+            Role role = roleRepository.getReferenceById(model.getRoleId());
 
-        user.setEmail(model.getEmail());
-        user.setName(model.getName());
-        user.setRole(role);
-
-        userRepository.save(user);
-        return new ResponseSuccessDto(true, "User has updated");
+            user.setEmail(model.getEmail());
+            user.setName(model.getName());
+            user.setRole(role);
+            userRepository.save(user);
+        }
+        return r;
     }
 
     @Override
     public ResponseSuccessDto delete(long id) {
-        userRepository.deleteById(id);
-        return new ResponseSuccessDto(true, "User has Deleted");
+        var response = new ResponseSuccessDto(false, "User not found");
+        if(userRepository.existsById(id)){
+            userRepository.deleteById(id);
+            response = new ResponseSuccessDto(true, "User has Deleted");
+        }
+
+        return response;
     }
 
     @Override

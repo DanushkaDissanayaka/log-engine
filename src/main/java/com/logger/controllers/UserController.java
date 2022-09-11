@@ -4,6 +4,9 @@ import com.logger.base.model.common.Concrete.ResponseSuccessDto;
 import com.logger.base.model.user.UserDto;
 import com.logger.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,6 +40,9 @@ public class UserController extends BaseController {
     }
     @DeleteMapping(path = "{id}")
     public ResponseSuccessDto delete(@PathVariable("id") long id) {
+       if(id == getUserId()) {
+           return new ResponseSuccessDto(false, "you cannot delete current logged in user");
+       }
         return this.userService.delete(id);
     }
 }
