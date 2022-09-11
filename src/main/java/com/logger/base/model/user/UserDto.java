@@ -2,9 +2,28 @@ package com.logger.base.model.user;
 
 public class UserDto {
     private Long id;
+    private Long roleId;
     private String name;
     private String email;
     private String password;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public UserDto() {
+    }
+
+    public UserDto(Long roleId, String name, String email, String password) {
+        this.roleId = roleId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
     public Long getId() {
         return id;
